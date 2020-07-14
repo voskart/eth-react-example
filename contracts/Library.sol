@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
+pragma experimental ABIEncoderV2;
 
 contract Library{
 
@@ -12,13 +13,13 @@ struct Book{
 }
 
 mapping (address => Book) loanedBooks;
-string private name;
-address private admin;
+address public admin;
 Book[] public bookInventory;
+string public name;
 uint private numberOfBooks;
 
 constructor(string memory _name) public {
-    name = _name;
+    name = "Test Lib";
     admin = msg.sender;
 }
 
@@ -28,6 +29,11 @@ function newBookInInventory(string memory title, string memory author_name) publ
     bookInventory.push(newBook);
     numberOfBooks++;
     return true;
+}
+
+function getBook(uint i) public view returns (Book memory){
+    Book memory book = bookInventory[i];
+    return book;
 }
 
 function getInventorySize() public view returns (uint){

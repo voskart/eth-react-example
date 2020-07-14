@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 import './App.css'
 import { LIBRARY_ADDRESS, LIBRARY_ABI } from './config'
+import Table from "./Table"
 
 class App extends Component {
 
@@ -16,10 +17,11 @@ class App extends Component {
     this.setState({ admin : accounts[0]});
     this.setState({ books : library.bookInventory});
     this.setState({ inventorySize : inventorySize});
-    this.setState({ library });
+    this.setState({ library: library});
     this.setState({ account: accounts[0] });
     this.setState({ balance: balance});
     this.setState({ balance2: balance2});
+    this.getBooks();
   }
 
   constructor(props) {
@@ -27,7 +29,6 @@ class App extends Component {
     this.state = { 
       account: '',
       balance: 0,
-      balance2: 0,
       inventorySize: 0,
       admin: '',
       title: '',
@@ -53,13 +54,21 @@ class App extends Component {
     this.setState({[nam]: val});
   }
 
+  async getBooks(){
+    var bookInventory = [];
+    var book = null;
+    for (var i = 0; i < this.state.inventorySize ; i++){
+      book = await this.state.library.methods.bookInventory(i).call();
+      bookInventory.push(book);
+    };
+    this.setState({ bookInventory: bookInventory});
+  }
+
   render() {
     return (
       <div className="container">
-        <h1>Hello, World!</h1>
         <p>Your account: {this.state.account}</p>
         <p>Your balance: {this.state.balance}</p>
-        <p>Your balance on account 2: {this.state.balance2}</p>
         <p>inventorySize: {this.state.inventorySize}</p>
 
         <div className="container-fluid">
@@ -68,7 +77,10 @@ class App extends Component {
               <input id="author" type="text" name="author" onChange={this.handleChange} className="form-control" placeholder="Sample Author" required />
               <input type="submit" value="Submit" hidden="" />
           </form>
-        </div>  
+        </div>
+      <div>
+        {this.state.bookInventory ? (<Table {...this.props} books = {this.state.bookInventory}/>) : ('No Books Available')}
+      </div>  
       </div>
     );
   }
