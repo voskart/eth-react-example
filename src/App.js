@@ -10,17 +10,14 @@ class App extends Component {
     const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     const accounts = await web3.eth.getAccounts();
     const balance = await web3.eth.getBalance(accounts[0]);
-    const balance2 = await web3.eth.getBalance(accounts[1]);
     var library = new web3.eth.Contract(LIBRARY_ABI, LIBRARY_ADDRESS);
     const inventorySize = await library.methods.getInventorySize().call();
     console.log(await web3.eth.getBalance(accounts[0]))
     this.setState({ admin : accounts[0]});
-    this.setState({ books : library.bookInventory});
     this.setState({ inventorySize : inventorySize});
     this.setState({ library: library});
     this.setState({ account: accounts[0] });
     this.setState({ balance: balance});
-    this.setState({ balance2: balance2});
     this.getBooks();
   }
 
@@ -55,13 +52,15 @@ class App extends Component {
   }
 
   async getBooks(){
-    var bookInventory = [];
+    this.setState ({loading: true});
+    var books = [];
     var book = null;
     for (var i = 0; i < this.state.inventorySize ; i++){
       book = await this.state.library.methods.bookInventory(i).call();
-      bookInventory.push(book);
+      books.push(book);
     };
-    this.setState({ bookInventory: bookInventory});
+    this.setState({ bookInventory: books});
+    this.setState ({loading: false});
   }
 
   render() {
@@ -79,7 +78,7 @@ class App extends Component {
           </form>
         </div>
       <div>
-        {this.state.bookInventory ? (<Table {...this.props} books = {this.state.bookInventory}/>) : ('No Books Available')}
+        {this.state.loading ? ('Loading') : (<Table {...this.props} books = {this.state.bookInventory}/>)}
       </div>  
       </div>
     );

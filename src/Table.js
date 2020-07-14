@@ -4,13 +4,14 @@ import React, { Component } from 'react'
 class Table extends Component{
 	constructor(props){
 		super(props);
-		console.log(this.props.books);
+		this.state = {
+      		books: null
+    	}
 	}
 
 	render(){
-
+		if (!this.props.books) return null
 		return <div>
-
 		<div className="container">
 			<table className="table" style={{"textAlign":"center"}}>
 		        <thead id="books">
